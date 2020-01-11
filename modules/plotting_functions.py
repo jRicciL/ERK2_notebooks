@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mpltcols
 import matplotlib.patches as mpatches
 
-
-
 def density_estimation(x, y, sort_points = True):
     '''Calcula la densidad de la distribución de los puntos en un espacio bidimensional x y
     utilizando la distribución gausiana, y devuelve los puntos x, y ordenados por su frecuencia,
@@ -16,6 +14,17 @@ def density_estimation(x, y, sort_points = True):
         idx = z.argsort()
         x, y, z = x[idx], y[idx], z[idx]
     return x, y, z
+
+def plot_mds(mds_obj, titulo = '', list_of_labels = None, 
+             df_conf_indexes = None, key_structures = None, 
+             color_key_labels = "magenta", xytext_delta = [0.1, 0.1], equal_axis = True):
+    '''Función para grraficar un MDS dado una instancia de una matriz de disimilitud
+    o similitud, y adicionalmente etiquetas que distingan a cada observación'''
+    plot_points(mds = mds_obj, labels = list_of_labels, title = titulo, equal_axis = equal_axis)
+    if key_structures is not None and df_conf_indexes is not None:
+        plot_anotation_labels(df_conf_indexes, key_structures, 
+                          mds_obj[0], mds_obj[1], xytext_delta=xytext_delta, s=120, 
+                          c = color_key_labels)
 
 def plot_anotation_labels(list_of_all_index, list_of_ref_names, x, y, 
     marker='o', s = 90, c = "", 
@@ -32,10 +41,10 @@ def plot_anotation_labels(list_of_all_index, list_of_ref_names, x, y,
         plt.annotate(label, xy = (x_ref_points[i], y_ref_points[i]), fontsize = fontsize, weight = 'bold',
                     arrowprops=dict(facecolor='black', shrink=0.1), 
                     xytext=(x_ref_points[i] - xytext_delta[0], y_ref_points[i]- xytext_delta[1]),
-                    horizontalalignment='left', verticalalignment='bottom',)
+                    horizontalalignment='left', verticalalignment='bottom')
 
 
-def plot_mds_or_pca(mds, labels = None,
+def plot_points(mds, labels = None,
     colors_list = ['#E93523', '#23E9BC', '#23B537', '#036193', '#FEA50A', 'gray'],
     #dic_of_ref_labels = None,
     #traj_labels = None,

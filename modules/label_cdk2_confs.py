@@ -32,8 +32,7 @@ def secondary_struc(traj_obj, residues_mask):
     # dssp_traj[1] has n_frames, n_residues shape
     return dssp_traj[1]
 
-def label_cdk2_conformations(traj_obj, 
-    saltbridge_cutoff = 8,
+def label_cdk2_conformations(traj_obj, saltbridge_cutoff = 8,
     dfg_angle_cutoff = 0.0,
     center_dist_cutoff = 20.0,
     min_num_res_helix = 9):

@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mpltcols
 import matplotlib.patches as mpatches
 
-def cMDS(D):
+def cMDS(D, is_similarity = False):
     # Modificado de: http://www.nervouscomputer.com/hfs/cmdscale-in-python/
+    if is_similarity:
+        D = 1 - D # Si es matriz de similitud, se vuelva a distancia
     # Número de observaciones                                                                
     n = len(D)
     # Se genera la matriz de distancia al cuadrado (Squared proximity matrix)
