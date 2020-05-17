@@ -1,11 +1,17 @@
 import pandas as pd
 import numpy as np
 
-def correlation(dataset, threshold):
+def correlation(dataset, threshold, correlated_mtx=None, absoluted=True):
     # Creates a dictionary with feature names and a counter initialized at zero
     counter_of_corrs = {f: 0 for f in dataset.columns}
     col_corr = set() # Set of all the names of deleted columns
-    corr_matrix = dataset.corr(method='spearman')
+    
+    if correlated_mtx is None:
+        corr_matrix = dataset.corr(method='spearman')
+    else:
+        corr_matrix = correlated_mtx
+    if absoluted:
+        corr_matrix = abs(corr_matrix)
     for i in range(len(corr_matrix.columns)):
         for j in range(i):
             if (corr_matrix.iloc[i, j] >= threshold):
@@ -17,8 +23,9 @@ def correlation(dataset, threshold):
     counter_of_corrs = pd.Series(counter_of_corrs)
     return(counter_of_corrs)
 
-def drop_features(dataset, thr, min_thr, step, list_of_droped_features, verbose = False):
-    counter_of_corrs = correlation(dataset, thr)
+def drop_features(dataset, thr, min_thr, step, list_of_droped_features, 
+                  verbose = False, correlated_mtx=None, **kwargs):
+    counter_of_corrs = correlation(dataset, thr, **kwargs)
     max_n_correlations = counter_of_corrs.max()
     if max_n_correlations > 0:
         # Get the features with the max value
@@ -31,14 +38,16 @@ def drop_features(dataset, thr, min_thr, step, list_of_droped_features, verbose 
         if verbose: print('Droped conf:', feature_to_drop, '-> rho =', round(thr, 3))
         new_dataset = dataset.drop([feature_to_drop], axis = 1)
         # Recursively
-        drop_features(new_dataset, thr, min_thr, step, list_of_droped_features, verbose)
+        drop_features(new_dataset, thr, min_thr, step, list_of_droped_features, verbose, correlated_mtx)
     elif thr >= min_thr:
         #print(thr, min_thr)
-        drop_features(dataset, thr - step, min_thr, step, list_of_droped_features, verbose)
+        drop_features(dataset, thr - step, min_thr, step, list_of_droped_features, verbose, correlated_mtx)
 
-def features_to_drop(dataset, min_thr, max_thr, step, verbose = False):
+def features_to_drop(dataset, min_thr, max_thr, step, correlated_mtx=None, **kwargs):
     dataset = dataset.copy()
+    if correlated_mtx is not None:
+        correlated_mtx = correlated_mtx.copy()
     list_of_droped_features = []
     # User recursion to find
-    drop_features(dataset, max_thr, min_thr, step, list_of_droped_features, verbose = verbose)
+    drop_features(dataset, max_thr, min_thr, step, list_of_droped_features, correlated_mtx=correlated_mtx, **kwargs)
     return(list_of_droped_features)
